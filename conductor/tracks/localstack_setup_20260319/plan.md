@@ -19,7 +19,7 @@ This plan outlines the steps for setting up LocalStack for local testing of the 
     - [ ] Script to generate a JWT and invoke the Lambda in LocalStack using `aws lambda invoke`.
 - [x] Task: Conductor - User Manual Verification 'Phase 2: Deployment and Invocation Scripts' (Protocol in workflow.md) 2108ea3
 
-## Phase 3: Verification & Cleanup
+## Phase 3: Verification & Cleanup [checkpoint: f0f0466]
 - [x] Task: Verify the entire local development loop
     - [ ] Start LocalStack, build, deploy, and test.
-- [~] Task: Conductor - User Manual Verification 'Phase 3: Verification & Cleanup' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 3: Verification & Cleanup' (Protocol in workflow.md) f0f0466
