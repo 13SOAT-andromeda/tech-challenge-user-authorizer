@@ -19,7 +19,7 @@ This plan outlines the steps for implementing JWT validation in the Go-based Use
     - [ ] Write unit tests for JWT parsing using a symmetric key (Red phase)
     - [ ] Implement JWT parsing and validation logic (Green phase)
     - [ ] Refactor and ensure tests pass
-- [ ] Task: Implement Issuer verification
+- [x] Task: Implement Issuer verification ee765cf
     - [ ] Write unit tests for checking the `iss` claim against the environment variable (Red phase)
     - [ ] Implement issuer verification logic (Green phase)
     - [ ] Refactor and ensure tests pass
