@@ -16,6 +16,7 @@ To establish a secure, performant, and reliable authorization layer that can be 
 - **JWT Authorization:** Validates JSON Web Tokens (JWT) to authenticate and authorize user requests.
 - **Identity Extraction:** Extracts user identity and permission information from valid tokens.
 - **Serverless Integration:** Designed to run on AWS Lambda for high availability and low operational overhead.
+- **Local Development Environment:** Integrated with LocalStack for offline testing and rapid development.
 - **Infrastructure as Code:** Fully managed using Terraform for consistent and repeatable deployments.
 
 ## Target Audience

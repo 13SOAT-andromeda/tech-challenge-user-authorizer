@@ -11,6 +11,8 @@
 
 ## Infrastructure
 - **Infrastructure as Code:** Terraform (for provisioning and managing cloud resources).
+- **Local Simulation:** LocalStack (for local AWS service emulation).
+- **Containerization:** Docker & Docker Compose (for local environment management).
 
 ## Cloud Provider
 - **Provider:** Amazon Web Services (AWS).
