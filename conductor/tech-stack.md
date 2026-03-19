@@ -4,6 +4,7 @@
 - **Language:** Go (Golang)
 - **Runtime:** AWS Lambda (running on Amazon Linux 2023)
 - **Framework:** Go Standard Library or relevant Lambda framework.
+- **Authentication:** `github.com/golang-jwt/jwt/v5` (for JWT validation).
 
 ## Database
 - **Primary Database:** DynamoDB (for high-speed, scalable data storage).
