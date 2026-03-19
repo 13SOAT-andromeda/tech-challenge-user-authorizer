@@ -9,7 +9,7 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 ---
 
-- [~] **Track: Create LocalStack configuration and setup a deployment script for local testing.**
+- [x] **Track: Create LocalStack configuration and setup a deployment script for local testing.**
 *Link: [./tracks/localstack_setup_20260319/](./tracks/localstack_setup_20260319/)*
 
 ---
