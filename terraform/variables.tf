@@ -9,3 +9,8 @@ variable "dynamodb_table_name" {
   type        = string
   default     = "user-authentication-token"
 }
+
+variable "image_tag" {
+  description = "ECR image tag"
+  type        = string
+}
