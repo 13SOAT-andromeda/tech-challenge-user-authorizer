@@ -3,6 +3,8 @@ package auth
 import (
 	"errors"
 	"fmt"
+	"strings"
+
 	"github.com/golang-jwt/jwt/v5"
 )
 
@@ -34,4 +36,18 @@ func ValidateToken(tokenString, secret, expectedIssuer string) (jwt.MapClaims, e
 	}
 
 	return nil, errors.New("invalid token")
+}
+
+// ExtractBearerToken extracts the token from the Authorization header.
+func ExtractBearerToken(authHeader string) (string, error) {
+	if authHeader == "" {
+		return "", errors.New("authorization header is missing")
+	}
+
+	const prefix = "Bearer "
+	if !strings.HasPrefix(authHeader, prefix) || len(authHeader) <= len(prefix) {
+		return "", errors.New("invalid authorization header format")
+	}
+
+	return authHeader[len(prefix):], nil
 }

@@ -93,3 +93,40 @@ func TestValidateToken(t *testing.T) {
 		}
 	})
 }
+
+func TestExtractBearerToken(t *testing.T) {
+	t.Run("Valid Bearer Token", func(t *testing.T) {
+		authHeader := "Bearer my_token"
+		token, err := ExtractBearerToken(authHeader)
+		if err != nil {
+			t.Errorf("expected no error, got %v", err)
+		}
+		if token != "my_token" {
+			t.Errorf("expected my_token, got %s", token)
+		}
+	})
+
+	t.Run("Missing Bearer Prefix", func(t *testing.T) {
+		authHeader := "my_token"
+		_, err := ExtractBearerToken(authHeader)
+		if err == nil {
+			t.Error("expected error for missing Bearer prefix, got nil")
+		}
+	})
+
+	t.Run("Empty Header", func(t *testing.T) {
+		authHeader := ""
+		_, err := ExtractBearerToken(authHeader)
+		if err == nil {
+			t.Error("expected error for empty header, got nil")
+		}
+	})
+
+	t.Run("Malformed Header", func(t *testing.T) {
+		authHeader := "Bearer"
+		_, err := ExtractBearerToken(authHeader)
+		if err == nil {
+			t.Error("expected error for malformed header, got nil")
+		}
+	})
+}
