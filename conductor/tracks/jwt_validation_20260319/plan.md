@@ -2,7 +2,7 @@
 
 This plan outlines the steps for implementing JWT validation in the Go-based User Authorizer Lambda.
 
-## Phase 1: Environment Setup & Foundation
+## Phase 1: Environment Setup & Foundation [checkpoint: cf0b668]
 - [x] Task: Initialize Go module and project structure d1c34a8
     - [ ] Run `go mod init tech-challenge-user-authorizer`
     - [ ] Create basic project directory structure (e.g., `cmd/`, `internal/`, `pkg/`)
@@ -12,7 +12,7 @@ This plan outlines the steps for implementing JWT validation in the Go-based Use
 - [x] Task: Create basic Lambda handler structure 97ea340
     - [ ] Implement a minimal Lambda handler that returns a "Hello" response
     - [ ] Setup basic error and logging utilities
-- [ ] Task: Conductor - User Manual Verification 'Phase 1: Environment Setup & Foundation' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 1: Environment Setup & Foundation' (Protocol in workflow.md) cf0b668
 
 ## Phase 2: JWT Validation Logic (TDD)
 - [ ] Task: Implement JWT parsing and validation
