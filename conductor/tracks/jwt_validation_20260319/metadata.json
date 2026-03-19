@@ -1,0 +1,8 @@
+{
+  "track_id": "jwt_validation_20260319",
+  "type": "feature",
+  "status": "new",
+  "created_at": "2026-03-19T10:00:00Z",
+  "updated_at": "2026-03-19T10:00:00Z",
+  "description": "I need to create a validation to jwt based on the bearer token received on my Authorization header validating Issuer. The token is symetric key based on a variable in .env"
+}
