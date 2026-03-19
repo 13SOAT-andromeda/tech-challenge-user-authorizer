@@ -23,7 +23,7 @@ This plan outlines the steps for implementing JWT validation in the Go-based Use
     - [ ] Write unit tests for checking the `iss` claim against the environment variable (Red phase)
     - [ ] Implement issuer verification logic (Green phase)
     - [ ] Refactor and ensure tests pass
-- [ ] Task: Implement Bearer token extraction
+- [x] Task: Implement Bearer token extraction 2ee0b8f
     - [ ] Write unit tests for extracting the token from the `Authorization` header (Red phase)
     - [ ] Implement token extraction logic from the Lambda event (Green phase)
     - [ ] Refactor and ensure tests pass
