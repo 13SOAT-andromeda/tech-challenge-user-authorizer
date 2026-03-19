@@ -6,7 +6,7 @@ This plan outlines the steps for implementing JWT validation in the Go-based Use
 - [x] Task: Initialize Go module and project structure d1c34a8
     - [ ] Run `go mod init tech-challenge-user-authorizer`
     - [ ] Create basic project directory structure (e.g., `cmd/`, `internal/`, `pkg/`)
-- [ ] Task: Define environment configuration
+- [x] Task: Define environment configuration 75ac9c6
     - [ ] Create a `.env.example` file with `JWT_SECRET` and `JWT_ISSUER`
     - [ ] Implement environment variable loading (using `os` or a library like `godotenv`)
 - [ ] Task: Create basic Lambda handler structure
