@@ -14,7 +14,7 @@ This plan outlines the steps for implementing JWT validation in the Go-based Use
     - [ ] Setup basic error and logging utilities
 - [x] Task: Conductor - User Manual Verification 'Phase 1: Environment Setup & Foundation' (Protocol in workflow.md) cf0b668
 
-## Phase 2: JWT Validation Logic (TDD)
+## Phase 2: JWT Validation Logic (TDD) [checkpoint: af779bf]
 - [x] Task: Implement JWT parsing and validation ee765cf
     - [ ] Write unit tests for JWT parsing using a symmetric key (Red phase)
     - [ ] Implement JWT parsing and validation logic (Green phase)
@@ -27,7 +27,7 @@ This plan outlines the steps for implementing JWT validation in the Go-based Use
     - [ ] Write unit tests for extracting the token from the `Authorization` header (Red phase)
     - [ ] Implement token extraction logic from the Lambda event (Green phase)
     - [ ] Refactor and ensure tests pass
-- [ ] Task: Conductor - User Manual Verification 'Phase 2: JWT Validation Logic (TDD)' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 2: JWT Validation Logic (TDD)' (Protocol in workflow.md) af779bf
 
 ## Phase 3: Integration & Final Verification
 - [ ] Task: Integrate JWT validation into the Lambda handler
