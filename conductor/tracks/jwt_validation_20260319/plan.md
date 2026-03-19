@@ -30,11 +30,11 @@ This plan outlines the steps for implementing JWT validation in the Go-based Use
 - [x] Task: Conductor - User Manual Verification 'Phase 2: JWT Validation Logic (TDD)' (Protocol in workflow.md) af779bf
 
 ## Phase 3: Integration & Final Verification
-- [ ] Task: Integrate JWT validation into the Lambda handler
+- [x] Task: Integrate JWT validation into the Lambda handler 3716d76
     - [ ] Update the handler to call the validation logic
     - [ ] Return 401 Unauthorized for invalid tokens
     - [ ] Return success for valid tokens
-- [ ] Task: Perform end-to-end local verification
+- [~] Task: Perform end-to-end local verification
     - [ ] Use a local Lambda simulator or `curl` (if running locally) to verify the flow
     - [ ] Verify both valid and invalid token scenarios
 - [ ] Task: Conductor - User Manual Verification 'Phase 3: Integration & Final Verification' (Protocol in workflow.md)
