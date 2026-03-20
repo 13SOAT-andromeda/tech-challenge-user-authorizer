@@ -14,7 +14,7 @@ COMPOSE_SERVICE?=localstack
 
 JWT_SECRET=5b9b178c235820c6e69fbf54876bc4df3ffb4f3ab5ec87305b8b42d2481358c3
 JWT_ISSUER=tech-challenge-s1
-SESSION_TABLE_NAME=user-auth-tokens
+SESSION_TABLE_NAME=user-authentication-token
 # Endpoint do DynamoDB dentro da Lambda (LocalStack). Vazio = AWS real. Ver README / .env.example
 DYNAMODB_ENDPOINT?=
 

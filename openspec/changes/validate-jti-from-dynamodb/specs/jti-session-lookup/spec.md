@@ -1,7 +1,7 @@
 ## ADDED Requirements
 
 ### Requirement: Session is looked up by JTI from DynamoDB
-The authorizer SHALL retrieve the session record from DynamoDB using the JTI extracted from the JWT (`jti` claim) as the lookup key (`token_id` partition key), against the `user-auth-tokens` table.
+The authorizer SHALL retrieve the session record from DynamoDB using the JTI extracted from the JWT (`jti` claim) as the lookup key (`token_id` partition key), against the `user-authentication-token` table.
 
 #### Scenario: Valid JTI with existing session is authorized
 - **WHEN** a request arrives with a valid JWT whose `jti` exists as `token_id` in DynamoDB, without remove the actual jwt validation
@@ -43,9 +43,9 @@ The `Store` interface SHALL declare `GetSessionByJTI(ctx context.Context, jti st
 
 ---
 
-### Requirement: Default session table is user-auth-tokens
-The default value of `SESSION_TABLE_NAME` SHALL be `user-auth-tokens` to align with the authentication lambda's table.
+### Requirement: Default session table is user-authentication-token
+The default value of `SESSION_TABLE_NAME` SHALL be `user-authentication-token` to align with the authentication lambda's table.
 
 #### Scenario: No SESSION_TABLE_NAME env var uses correct default
 - **WHEN** `SESSION_TABLE_NAME` is not set in the environment
-- **THEN** the authorizer SHALL connect to the `user-auth-tokens` DynamoDB table
+- **THEN** the authorizer SHALL connect to the `user-authentication-token` DynamoDB table

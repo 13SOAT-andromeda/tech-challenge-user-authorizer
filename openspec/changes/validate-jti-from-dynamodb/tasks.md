@@ -14,13 +14,13 @@
 
 ## 3. Update Config and Environment
 
-- [x] 3.1 In `internal/config/config.go`, change the default value of `SessionTableName` from `user-sessions` to `user-auth-tokens`
-- [x] 3.2 Update `.env` — set `SESSION_TABLE_NAME=user-auth-tokens`
-- [x] 3.3 Update `.env.example` — set `SESSION_TABLE_NAME=user-auth-tokens`
+- [x] 3.1 In `internal/config/config.go`, change the default value of `SessionTableName` from `user-sessions` to `user-authentication-token`
+- [x] 3.2 Update `.env` — set `SESSION_TABLE_NAME=user-authentication-token`
+- [x] 3.3 Update `.env.example` — set `SESSION_TABLE_NAME=user-authentication-token`
 
 ## 4. Update Makefile and Local Dev Scripts
 
-- [x] 4.1 Update `make dynamodb-create-table` to create `user-auth-tokens` with `token_id` (String) as the partition key
+- [x] 4.1 Update `make dynamodb-create-table` to create `user-authentication-token` with `token_id` (String) as the partition key
 - [x] 4.2 Update `make dynamodb-put-session` to write a `token_id` (JTI) + `user_id` + `expires_at` item
 - [x] 4.3 Update `make dynamodb-get-session` to use `token_id` key
 - [x] 4.4 Update `make dynamodb-delete-session` to use `token_id` key
@@ -38,7 +38,7 @@
 
 - [x] 6.1 Run `go build ./...` and confirm zero compilation errors
 - [x] 6.2 Run `go test ./...` and confirm all tests pass
-- [ ] 6.3 Run `make dynamodb-bootstrap` against LocalStack to create `user-auth-tokens` with correct schema
+- [ ] 6.3 Run `make dynamodb-bootstrap` against LocalStack to create `user-authentication-token` with correct schema
 - [ ] 6.4 Login via `tech-challenge-user-authentication` Lambda to obtain a real JWT (with JTI written to DynamoDB)
 - [ ] 6.5 Build and deploy authorizer: `make build && make deploy`
 - [ ] 6.6 Invoke authorizer with the JWT from step 6.4 and confirm HTTP 200

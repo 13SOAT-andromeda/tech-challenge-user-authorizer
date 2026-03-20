@@ -6,8 +6,8 @@ import (
 
 // Config represents the application configuration.
 type Config struct {
-	JWTSecret        string
-	JWTIssuer        string
+	JWTSecret string
+	JWTIssuer string
 	// SessionTableName is the DynamoDB table used by internal/session (active session token_id/user_id).
 	SessionTableName string
 }
@@ -17,7 +17,7 @@ func LoadConfig() *Config {
 	return &Config{
 		JWTSecret:        getEnv("JWT_SECRET", ""),
 		JWTIssuer:        getEnv("JWT_ISSUER", ""),
-		SessionTableName: getEnv("SESSION_TABLE_NAME", "user-auth-tokens"),
+		SessionTableName: getEnv("SESSION_TABLE_NAME", "user-authentication-token"),
 	}
 }
 
