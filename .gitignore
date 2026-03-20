@@ -1,0 +1,72 @@
+# Go build artifacts
+/bin/
+/obj/
+*.exe
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+
+# Go workspace
+vendor/
+Godeps/
+
+# Go cache
+*.cache
+*/go-build*
+
+# Dependency directories
+node_modules/
+
+# IDE/editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Build output
+authorizer_bin/
+
+# AWS SAM / Serverless local artifacts
+.localstack/
+.localstack/*
+
+# Localstack generated data
+localstack-data/
+
+# Terraform files
+*.tfstate
+*.tfstate.*
+*.tfvars
+*.tfvars.json
+.terraform/
+crash.log
+
+# AWS credential files
+*.pem
+aws_credentials
+credentials
+
+# Environment
+.env
+.env.*
+
+# Logs
+*.log
+
+# Generated files
+response.json
+
+# Mac files
+._*
+
+# Coverage
+coverage.html
+
+# Misc
+*.zip
+*.tar.gz
+
