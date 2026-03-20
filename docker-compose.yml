@@ -6,9 +6,19 @@ services:
       - "127.0.0.1:4566:4566"            # LocalStack Gateway
       - "127.0.0.1:4510-4559:4510-4559"  # external services port range
     environment:
-      - SERVICES=lambda,iam,s3,cloudwatch,sts
-      - DEBUG=${DEBUG:-0}
-      - DOCKER_HOST=unix:///var/run/docker.sock
+      # cloudwatch = métricas/alarmes (API); logs = CloudWatch Logs (grupos/streams da Lambda)
+      SERVICES: lambda,iam,s3,cloudwatch,logs,sts,dynamodb
+      DEBUG: ${DEBUG:-0}
+      # Verbosidade LocalStack (warning|info|debug|trace) — útil em make container-logs
+      LS_LOG: ${LS_LOG:-warning}
+      DOCKER_HOST: unix:///var/run/docker.sock
+      AWS_DEFAULT_REGION: us-east-1
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock"
       - "./localstack-data:/var/lib/localstack"
+    # Rotação local do stdout (monitoramento via docker compose logs -f)
+    logging:
+      driver: json-file
+      options:
+        max-size: "20m"
+        max-file: "3"
