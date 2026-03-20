@@ -1,0 +1,8 @@
+{
+  "track_id": "go_authorizer_20260319",
+  "type": "feature",
+  "status": "new",
+  "created_at": "2026-03-19T11:00:00Z",
+  "updated_at": "2026-03-19T11:00:00Z",
+  "description": "generate a new application like aws lambda running in golang to authorize the users after receive the jwt token. We need to extract the code based on the application locally on @/home/gedanmx/FIAP/tech-challenge-s1"
+}

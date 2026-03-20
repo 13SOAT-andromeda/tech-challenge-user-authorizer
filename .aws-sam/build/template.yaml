@@ -1,0 +1,35 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: Tech Challenge User Authorizer - SAM local
+Globals:
+  Function:
+    Timeout: 10
+    MemorySize: 128
+    Tracing: Active
+Resources:
+  UserAuthorizerFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: tech-challenge-user-authorizer
+      CodeUri: UserAuthorizerFunction
+      Handler: bootstrap
+      Runtime: provided.al2023
+      Architectures:
+      - x86_64
+      Environment:
+        Variables:
+          JWT_SECRET: 5b9b178c235820c6e69fbf54876bc4df3ffb4f3ab5ec87305b8b42d2481358c3
+          JWT_ISSUER: tech-challenge-s1
+      Events:
+        AuthorizeApi:
+          Type: Api
+          Properties:
+            Path: /authorize
+            Method: post
+    Metadata:
+      BuildMethod: makefile
+      SamResourceId: UserAuthorizerFunction
+Outputs:
+  LocalApiUrl:
+    Description: URL local da API
+    Value: http://127.0.0.1:3000/authorize

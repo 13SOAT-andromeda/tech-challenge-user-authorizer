@@ -1,0 +1,156 @@
+package main
+
+import (
+	"context"
+	"errors"
+	"fmt"
+	"strconv"
+	"strings"
+	"tech-challenge-user-authorizer/internal/auth"
+	"tech-challenge-user-authorizer/internal/config"
+	"tech-challenge-user-authorizer/internal/session"
+	"tech-challenge-user-authorizer/pkg/utils"
+
+	"github.com/aws/aws-lambda-go/events"
+	"github.com/aws/aws-lambda-go/lambda"
+)
+
+var appConfig *config.Config
+
+var sessionStore session.Store
+var newSessionStore = func(tableName string) (session.Store, error) {
+	return session.NewDynamoStore(tableName)
+}
+
+func handler(ctx context.Context, request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
+	if appConfig == nil {
+		appConfig = config.LoadConfig()
+	}
+	if sessionStore == nil {
+		store, err := newSessionStore(appConfig.SessionTableName)
+		if err != nil {
+			utils.ErrorLogger.Printf("Failed to initialize session store: %v", err)
+			return internalServerErrorResponse(), nil
+		}
+		sessionStore = store
+	}
+
+	utils.InfoLogger.Printf("Processing request: %s", request.Path)
+
+	authHeader, ok := request.Headers["Authorization"]
+
+	if !ok {
+		// Fallback to lowercase authorization (API Gateway sometimes lowercases headers)
+		authHeader, ok = request.Headers["authorization"]
+		if !ok {
+			utils.ErrorLogger.Printf("Missing Authorization header")
+			return unauthorizedResponse("Missing Authorization header"), nil
+		}
+	}
+
+	tokenString, err := auth.ExtractBearerToken(authHeader)
+	if err != nil {
+		utils.ErrorLogger.Printf("Invalid Authorization header format: %v", err)
+		return unauthorizedResponse("Invalid Authorization header format"), nil
+	}
+
+	claims, err := auth.ValidateToken(tokenString, appConfig.JWTSecret, appConfig.JWTIssuer)
+	if err != nil {
+		utils.ErrorLogger.Printf("Invalid token: %v", err)
+		return unauthorizedResponse("Invalid or expired token"), nil
+	}
+
+	tokenJTI, err := getRequiredStringClaim(claims, "jti")
+	if err != nil {
+		utils.ErrorLogger.Printf("Invalid token claims: %v", err)
+		return unauthorizedResponse("Invalid or expired token"), nil
+	}
+	userID, err := getUserIDFromClaims(claims)
+	if err != nil {
+		utils.ErrorLogger.Printf("Invalid user identifier in token: %v", err)
+		return unauthorizedResponse("Invalid or expired token"), nil
+	}
+
+	activeSession, err := sessionStore.GetSessionByUserID(ctx, userID)
+	if err != nil {
+		if errors.Is(err, session.ErrSessionNotFound) {
+			utils.ErrorLogger.Printf("No active session found for user %s", userID)
+			return unauthorizedResponse("Invalid or expired token"), nil
+		}
+		utils.ErrorLogger.Printf("Failed to validate active session: %v", err)
+		return internalServerErrorResponse(), nil
+	}
+	if strings.TrimSpace(activeSession.UserID) != strings.TrimSpace(userID) {
+		utils.ErrorLogger.Printf("Session userId mismatch for token user %s (stored=%s)", userID, activeSession.UserID)
+		return unauthorizedResponse("Invalid or expired token"), nil
+	}
+	if activeSession.JTI != tokenJTI {
+		utils.ErrorLogger.Printf("Token jti mismatch for user %s", userID)
+		return unauthorizedResponse("Invalid or expired token"), nil
+	}
+
+	return events.APIGatewayProxyResponse{
+		StatusCode: 200,
+		Body:       "{\"message\": \"Authorized\"}",
+		Headers: map[string]string{
+			"Content-Type": "application/json",
+		},
+	}, nil
+}
+
+func unauthorizedResponse(message string) events.APIGatewayProxyResponse {
+	return events.APIGatewayProxyResponse{
+		StatusCode: 401,
+		Body:       "{\"error\": \"" + message + "\"}",
+		Headers: map[string]string{
+			"Content-Type": "application/json",
+		},
+	}
+}
+
+func internalServerErrorResponse() events.APIGatewayProxyResponse {
+	return events.APIGatewayProxyResponse{
+		StatusCode: 500,
+		Body:       "{\"error\": \"Internal server error\"}",
+		Headers: map[string]string{
+			"Content-Type": "application/json",
+		},
+	}
+}
+
+func getRequiredStringClaim(claims map[string]interface{}, key string) (string, error) {
+	value, exists := claims[key]
+	if !exists {
+		return "", fmt.Errorf("missing %s claim", key)
+	}
+
+	strValue, ok := value.(string)
+	if !ok || strValue == "" {
+		return "", fmt.Errorf("invalid %s claim", key)
+	}
+
+	return strValue, nil
+}
+
+func getUserIDFromClaims(claims map[string]interface{}) (string, error) {
+	if value, exists := claims["user_id"]; exists {
+		switch typed := value.(type) {
+		case string:
+			if typed != "" {
+				return typed, nil
+			}
+		case float64:
+			return strconv.FormatInt(int64(typed), 10), nil
+		}
+	}
+
+	subject, err := getRequiredStringClaim(claims, "sub")
+	if err != nil {
+		return "", err
+	}
+	return subject, nil
+}
+
+func main() {
+	lambda.Start(handler)
+}

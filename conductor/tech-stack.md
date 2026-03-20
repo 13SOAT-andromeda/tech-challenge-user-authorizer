@@ -1,0 +1,18 @@
+# Tech Stack: User Authorizer
+
+## Backend
+- **Language:** Go (Golang)
+- **Runtime:** AWS Lambda (running on Amazon Linux 2023)
+- **Framework:** Go Standard Library or relevant Lambda framework.
+- **Authentication:** `github.com/golang-jwt/jwt/v5` (for JWT validation).
+
+## Database
+- **Primary Database:** DynamoDB (for high-speed, scalable data storage).
+
+## Infrastructure
+- **Infrastructure as Code:** Terraform (for provisioning and managing cloud resources).
+- **Local Simulation:** LocalStack (for local AWS service emulation).
+- **Containerization:** Docker & Docker Compose (for local environment management).
+
+## Cloud Provider
+- **Provider:** Amazon Web Services (AWS).
