@@ -31,12 +31,14 @@ This plan outlines the steps for implementing a serverless authorization functio
     - [x] Refactor the handler logic and ensure all tests pass.
 - [x] Task: Conductor - User Manual Verification 'Phase 2: JWT Validation & Session Lookup (TDD)' (Protocol in workflow.md) 5add1f9
 
-## Phase 3: Infrastructure & Final Verification
-- [ ] Task: Define Infrastructure with Terraform
-    - [ ] Create a `terraform/` directory and define the Lambda function resource.
-    - [ ] Configure IAM roles and policies for the Lambda function (e.g., CloudWatch Logs, DynamoDB Read).
-    - [ ] Define the `sessions` table name as an environment variable for the Lambda function.
-- [ ] Task: Local Verification & Cleanup
-    - [ ] Perform a local execution of the Lambda handler with sample events (valid/invalid tokens).
-    - [ ] Finalize documentation and update the README if necessary.
-- [ ] Task: Conductor - User Manual Verification 'Phase 3: Infrastructure & Final Verification' (Protocol in workflow.md)
+## Phase 3: Infrastructure & Final Verification [checkpoint: 97f9271]
+- [x] Task: Define Infrastructure with Terraform 97f9271
+    - [x] Create a `terraform/` directory and define the Lambda function resource.
+    - [x] Configure IAM roles and policies for the Lambda function (e.g., CloudWatch Logs, DynamoDB Read).
+    - [x] Define the `sessions` table name as an environment variable for the Lambda function.
+- [x] Task: Local Verification & Cleanup 97f9271
+    - [x] Perform a local execution of the Lambda handler with sample events (valid/invalid tokens).
+    - [x] Finalize documentation and update the README if necessary.
+
+## Phase: Review Fixes
+- [x] Task: Apply review suggestions 31b9fce
