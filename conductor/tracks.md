@@ -14,10 +14,15 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 ---
 
-- [ ] **Track: generate a new application like aws lambda running in golang to authorize the users after receive the jwt token. We need to extract the code based on the application locally on @/home/gedanmx/FIAP/tech-challenge-s1**
+- [~] **Track: generate a new application like aws lambda running in golang to authorize the users after receive the jwt token. We need to extract the code based on the application locally on @/home/gedanmx/FIAP/tech-challenge-s1**
 *Link: [./tracks/go_authorizer_20260319/](./tracks/go_authorizer_20260319/)*
 
 ---
 
 - [ ] **Track: subir a lambda com o localstack e com o api gateway**
 *Link: [./tracks/localstack_lambda_deploy_20260319/](./tracks/localstack_lambda_deploy_20260319/)*
+
+---
+
+- [ ] **Track: the new feature provide new makefile to complete setup to run application on localstack and improve the application and validate jwt token**
+*Link: [./tracks/localstack_setup_improvements_20260319/](./tracks/localstack_setup_improvements_20260319/)*

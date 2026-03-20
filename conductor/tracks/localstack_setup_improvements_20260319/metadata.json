@@ -1,0 +1,8 @@
+{
+  "track_id": "localstack_setup_improvements_20260319",
+  "type": "feature",
+  "status": "new",
+  "created_at": "2026-03-19T14:30:00Z",
+  "updated_at": "2026-03-19T14:30:00Z",
+  "description": "the new feature provide new makefile to complete setup to run application on localstack and improve the application and validate jwt token"
+}
