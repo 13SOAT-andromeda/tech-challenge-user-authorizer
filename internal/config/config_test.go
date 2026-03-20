@@ -8,8 +8,10 @@ import (
 func TestLoadConfig(t *testing.T) {
 	os.Setenv("JWT_SECRET", "test_secret")
 	os.Setenv("JWT_ISSUER", "test_issuer")
+	os.Setenv("SESSION_TABLE_NAME", "sessions-test")
 	defer os.Unsetenv("JWT_SECRET")
 	defer os.Unsetenv("JWT_ISSUER")
+	defer os.Unsetenv("SESSION_TABLE_NAME")
 
 	cfg := LoadConfig()
 
@@ -19,6 +21,10 @@ func TestLoadConfig(t *testing.T) {
 
 	if cfg.JWTIssuer != "test_issuer" {
 		t.Errorf("expected JWTIssuer to be 'test_issuer', got '%s'", cfg.JWTIssuer)
+	}
+
+	if cfg.SessionTableName != "sessions-test" {
+		t.Errorf("expected SessionTableName to be 'sessions-test', got '%s'", cfg.SessionTableName)
 	}
 }
 
