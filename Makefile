@@ -14,7 +14,7 @@ COMPOSE_SERVICE?=localstack
 
 JWT_SECRET=5b9b178c235820c6e69fbf54876bc4df3ffb4f3ab5ec87305b8b42d2481358c3
 JWT_ISSUER=tech-challenge-s1
-SESSION_TABLE_NAME=user-sessions
+SESSION_TABLE_NAME=user-auth-tokens
 # Endpoint do DynamoDB dentro da Lambda (LocalStack). Vazio = AWS real. Ver README / .env.example
 DYNAMODB_ENDPOINT?=
 
@@ -150,20 +150,19 @@ curl: ## Call API Gateway authorize route (requires API_ID)
 	-H "Authorization: Bearer TEST"
 
 # ===== DynamoDB (LocalStack) =====
-# Schema: PK userId (N). Each item MUST include:
-#   - userId: same value as JWT user_id or sub (authorizer checks item.userId == token user)
-#   - jti: same value as JWT jti claim (authorizer checks item.jti == token jti)
-# Aliases also accepted on read: Jti/JTI, UserId/user_id (see internal/session/store.go)
+# Schema: PK token_id (S = JTI UUID). Each item MUST include:
+#   - token_id: same value as JWT jti claim (authorizer looks up session by JTI)
+#   - user_id: same value as JWT user_id or sub (authorizer checks item.user_id == token user)
 # Set AWS_ACCESS_KEY_ID / AWS_SECRET_ACCESS_KEY if needed (LocalStack: test / test).
 
-dynamodb-create-table: ## Create SESSION_TABLE_NAME with hash key userId (N)
+dynamodb-create-table: ## Create SESSION_TABLE_NAME with hash key token_id (S)
 	@echo "Creating DynamoDB table $(SESSION_TABLE_NAME)..."
 	aws dynamodb create-table \
 		--endpoint-url=$(ENDPOINT) \
 		--region=$(REGION) \
 		--table-name $(SESSION_TABLE_NAME) \
-		--attribute-definitions AttributeName=userId,AttributeType=N \
-		--key-schema AttributeName=userId,KeyType=HASH \
+		--attribute-definitions AttributeName=token_id,AttributeType=S \
+		--key-schema AttributeName=token_id,KeyType=HASH \
 		--billing-mode PAY_PER_REQUEST \
 		|| true
 
@@ -173,28 +172,28 @@ dynamodb-wait-table: ## Wait until table exists and is ACTIVE
 		--region=$(REGION) \
 		--table-name $(SESSION_TABLE_NAME)
 
-dynamodb-put-session: ## Upsert session mirroring JWT: userId (N) + jti (S)
-	@echo "Putting session userId=$(USER_ID) jti=$(JTI) (must match JWT user_id/sub and jti)..."
+dynamodb-put-session: ## Upsert session: token_id (JTI) + user_id + expires_at
+	@echo "Putting session token_id=$(JTI) user_id=$(USER_ID) (must match JWT jti and user_id/sub)..."
 	aws dynamodb put-item \
 		--endpoint-url=$(ENDPOINT) \
 		--region=$(REGION) \
 		--table-name $(SESSION_TABLE_NAME) \
-		--item "{\"userId\":{\"N\":\"$(USER_ID)\"},\"jti\":{\"S\":\"$(JTI)\"}}"
+		--item "{\"token_id\":{\"S\":\"$(JTI)\"},\"user_id\":{\"S\":\"$(USER_ID)\"},\"expires_at\":{\"S\":\"2099-12-31T23:59:59Z\"}}"
 
-dynamodb-get-session: ## Get session by USER_ID
+dynamodb-get-session: ## Get session by JTI
 	aws dynamodb get-item \
 		--endpoint-url=$(ENDPOINT) \
 		--region=$(REGION) \
 		--table-name $(SESSION_TABLE_NAME) \
-		--key "{\"userId\":{\"N\":\"$(USER_ID)\"}}" \
+		--key "{\"token_id\":{\"S\":\"$(JTI)\"}}" \
 		--consistent-read
 
-dynamodb-delete-session: ## Remove session row for USER_ID
+dynamodb-delete-session: ## Remove session row for JTI
 	aws dynamodb delete-item \
 		--endpoint-url=$(ENDPOINT) \
 		--region=$(REGION) \
 		--table-name $(SESSION_TABLE_NAME) \
-		--key "{\"userId\":{\"N\":\"$(USER_ID)\"}}"
+		--key "{\"token_id\":{\"S\":\"$(JTI)\"}}"
 
 dynamodb-delete-table: ## Delete entire table (LocalStack)
 	aws dynamodb delete-table \

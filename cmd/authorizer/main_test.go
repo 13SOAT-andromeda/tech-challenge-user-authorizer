@@ -12,15 +12,15 @@ import (
 )
 
 type mockSessionStore struct {
-	sessionByUser map[string]*session.Session
-	err           error
+	sessionByJTI map[string]*session.Session
+	err          error
 }
 
-func (m *mockSessionStore) GetSessionByUserID(_ context.Context, userID string) (*session.Session, error) {
+func (m *mockSessionStore) GetSessionByJTI(_ context.Context, jti string) (*session.Session, error) {
 	if m.err != nil {
 		return nil, m.err
 	}
-	sessionData, ok := m.sessionByUser[userID]
+	sessionData, ok := m.sessionByJTI[jti]
 	if !ok {
 		return nil, session.ErrSessionNotFound
 	}
@@ -83,10 +83,9 @@ func TestHandler(t *testing.T) {
 		tokenString, _ := token.SignedString([]byte("test_secret"))
 
 		sessionStore = &mockSessionStore{
-			sessionByUser: map[string]*session.Session{
-				userID: {
+			sessionByJTI: map[string]*session.Session{
+				tokenJTI: {
 					UserID: userID,
-					JTI:    tokenJTI,
 				},
 			},
 		}
@@ -140,7 +139,7 @@ func TestHandler(t *testing.T) {
 		tokenString, _ := token.SignedString([]byte("test_secret"))
 
 		sessionStore = &mockSessionStore{
-			sessionByUser: map[string]*session.Session{},
+			sessionByJTI: map[string]*session.Session{},
 		}
 
 		request := events.APIGatewayProxyRequest{
@@ -158,21 +157,20 @@ func TestHandler(t *testing.T) {
 		}
 	})
 
-	t.Run("Session JTI Mismatch", func(t *testing.T) {
-		userID := "1"
+	t.Run("Session UserID Mismatch", func(t *testing.T) {
+		tokenJTI := "token-jti"
 		token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 			"iss": "test_issuer",
-			"sub": userID,
-			"jti": "token-jti",
+			"sub": "1",
+			"jti": tokenJTI,
 			"exp": time.Now().Add(time.Hour).Unix(),
 		})
 		tokenString, _ := token.SignedString([]byte("test_secret"))
 
 		sessionStore = &mockSessionStore{
-			sessionByUser: map[string]*session.Session{
-				userID: {
-					UserID: userID,
-					JTI:    "different-jti",
+			sessionByJTI: map[string]*session.Session{
+				tokenJTI: {
+					UserID: "999",
 				},
 			},
 		}

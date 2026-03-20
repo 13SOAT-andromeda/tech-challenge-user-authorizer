@@ -71,10 +71,10 @@ func handler(ctx context.Context, request events.APIGatewayProxyRequest) (events
 		return unauthorizedResponse("Invalid or expired token"), nil
 	}
 
-	activeSession, err := sessionStore.GetSessionByUserID(ctx, userID)
+	activeSession, err := sessionStore.GetSessionByJTI(ctx, tokenJTI)
 	if err != nil {
 		if errors.Is(err, session.ErrSessionNotFound) {
-			utils.ErrorLogger.Printf("No active session found for user %s", userID)
+			utils.ErrorLogger.Printf("No active session found for jti %s", tokenJTI)
 			return unauthorizedResponse("Invalid or expired token"), nil
 		}
 		utils.ErrorLogger.Printf("Failed to validate active session: %v", err)
@@ -82,10 +82,6 @@ func handler(ctx context.Context, request events.APIGatewayProxyRequest) (events
 	}
 	if strings.TrimSpace(activeSession.UserID) != strings.TrimSpace(userID) {
 		utils.ErrorLogger.Printf("Session userId mismatch for token user %s (stored=%s)", userID, activeSession.UserID)
-		return unauthorizedResponse("Invalid or expired token"), nil
-	}
-	if activeSession.JTI != tokenJTI {
-		utils.ErrorLogger.Printf("Token jti mismatch for user %s", userID)
 		return unauthorizedResponse("Invalid or expired token"), nil
 	}
 
