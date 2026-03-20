@@ -23,19 +23,22 @@ func ValidateToken(tokenString, secret, expectedIssuer string) (jwt.MapClaims, e
 		return nil, err
 	}
 
-	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
-		// Verify issuer
-		iss, err := claims.GetIssuer()
-		if err != nil {
-			return nil, err
-		}
-		if iss != expectedIssuer {
-			return nil, errors.New("invalid issuer")
-		}
-		return claims, nil
+	claims, ok := token.Claims.(jwt.MapClaims)
+	if !ok || !token.Valid {
+		return nil, errors.New("invalid token")
 	}
 
-	return nil, errors.New("invalid token")
+	issuer, err := claims.GetIssuer()
+
+	if err != nil {
+		return nil, err
+	}
+
+	if issuer != expectedIssuer {
+		return nil, fmt.Errorf("invalid issuer: %s", issuer)
+	}
+
+	return claims, nil
 }
 
 // ExtractBearerToken extracts the token from the Authorization header.
