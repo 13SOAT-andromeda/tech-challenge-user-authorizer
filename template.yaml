@@ -1,0 +1,41 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: Tech Challenge User Authorizer - SAM local
+
+Globals:
+  Function:
+    Timeout: 10
+    MemorySize: 128
+    Tracing: Active
+
+Resources:
+  UserAuthorizerFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: tech-challenge-user-authorizer
+      CodeUri: ./
+      Handler: bootstrap
+      Runtime: provided.al2023
+      Architectures:
+        - x86_64
+      Environment:
+        Variables:
+          JWT_SECRET: 5b9b178c235820c6e69fbf54876bc4df3ffb4f3ab5ec87305b8b42d2481358c3
+          JWT_ISSUER: tech-challenge-s1
+          SESSION_TABLE_NAME: user-sessions
+          AWS_REGION: us-east-1
+          # SAM local + LocalStack: use http://host.docker.internal:4566 (ou IP do host no Linux)
+          DYNAMODB_ENDPOINT: ""
+      Events:
+        AuthorizeApi:
+          Type: Api
+          Properties:
+            Path: /authorize
+            Method: post
+    Metadata:
+      BuildMethod: makefile
+
+Outputs:
+  LocalApiUrl:
+    Description: URL local da API
+    Value: http://127.0.0.1:3000/authorize
