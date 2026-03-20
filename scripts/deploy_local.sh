@@ -2,7 +2,7 @@
 set -e
 
 ENDPOINT_URL="http://localhost:4566"
-FUNCTION_NAME="tech-challenge-user-authorizer"
+FUNCTION_NAME="user-authorizer"
 ROLE_NAME="lambda-local-role"
 REGION="us-east-1"
 
