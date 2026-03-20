@@ -19,7 +19,7 @@ provider "aws" {
 }
 
 data "aws_ecr_repository" "this" {
-  name = "tech-challenge-user-authentication-repo"
+  name = "tech-challenge-user-authorizer-repo"
 }
 
 data "aws_iam_role" "lab_role" {
@@ -27,7 +27,7 @@ data "aws_iam_role" "lab_role" {
 }
 
 resource "aws_lambda_function" "this" {
-  function_name = "tech-challenge-user-authentication"
+  function_name = "tech-challenge-user-authorizer"
   role          = data.aws_iam_role.lab_role.arn
   package_type  = "Image"
   image_uri     = "${data.aws_ecr_repository.this.repository_url}:${var.image_tag}"
