@@ -70,3 +70,9 @@ coverage.html
 *.zip
 *.tar.gz
 
+# Claude Code local files
+.claude/
+bootstrap
+gh-pr-enhancer.skill
+gh-pr-enhancer/
+
