@@ -10,11 +10,11 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"os"
 
-	"github.com/aws/aws-sdk-go/aws"
-	awsSession "github.com/aws/aws-sdk-go/aws/session"
-	"github.com/aws/aws-sdk-go/service/dynamodb"
+	"github.com/aws/aws-sdk-go-v2/aws"
+	"github.com/aws/aws-sdk-go-v2/config"
+	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
+	"github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
 )
 
 var ErrSessionNotFound = errors.New("session not found")
@@ -28,32 +28,34 @@ type Store interface {
 }
 
 type DynamoStore struct {
-	client    *dynamodb.DynamoDB
+	client    *dynamodb.Client
 	tableName string
 }
 
-func NewDynamoStore(tableName string) (*DynamoStore, error) {
-	cfg := aws.NewConfig().WithRegion(getEnv("AWS_REGION", "us-east-1"))
-	if endpoint := os.Getenv("DYNAMODB_ENDPOINT"); endpoint != "" {
-		cfg = cfg.WithEndpoint(endpoint)
+func NewDynamoStore(tableName, region, endpoint string) (*DynamoStore, error) {
+	opts := []func(*config.LoadOptions) error{
+		config.WithRegion(region),
+	}
+	if endpoint != "" {
+		opts = append(opts, config.WithBaseEndpoint(endpoint))
 	}
 
-	sess, err := awsSession.NewSession(cfg)
+	cfg, err := config.LoadDefaultConfig(context.Background(), opts...)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create aws session: %w", err)
+		return nil, fmt.Errorf("failed to load aws config: %w", err)
 	}
 
 	return &DynamoStore{
-		client:    dynamodb.New(sess),
+		client:    dynamodb.NewFromConfig(cfg),
 		tableName: tableName,
 	}, nil
 }
 
 func (s *DynamoStore) GetSessionByJTI(ctx context.Context, jti string) (*Session, error) {
-	out, err := s.client.GetItemWithContext(ctx, &dynamodb.GetItemInput{
+	out, err := s.client.GetItem(ctx, &dynamodb.GetItemInput{
 		TableName: aws.String(s.tableName),
-		Key: map[string]*dynamodb.AttributeValue{
-			"token_id": {S: aws.String(jti)},
+		Key: map[string]types.AttributeValue{
+			"token_id": &types.AttributeValueMemberS{Value: jti},
 		},
 	})
 	if err != nil {
@@ -64,18 +66,15 @@ func (s *DynamoStore) GetSessionByJTI(ctx context.Context, jti string) (*Session
 	}
 
 	userIDAttr, ok := out.Item["user_id"]
-	if !ok || userIDAttr.S == nil || *userIDAttr.S == "" {
+	if !ok {
+		return nil, fmt.Errorf("invalid user_id in session record")
+	}
+	userIDVal, ok := userIDAttr.(*types.AttributeValueMemberS)
+	if !ok || userIDVal.Value == "" {
 		return nil, fmt.Errorf("invalid user_id in session record")
 	}
 
 	return &Session{
-		UserID: *userIDAttr.S,
+		UserID: userIDVal.Value,
 	}, nil
-}
-
-func getEnv(key, defaultValue string) string {
-	if value, ok := os.LookupEnv(key); ok {
-		return value
-	}
-	return defaultValue
 }

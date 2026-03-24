@@ -8,7 +8,7 @@ terraform {
   }
 
   backend "s3" {
-    key     = "lambda-user-authentication.tfstate"
+    key     = "lambda-user-authorizer.tfstate"
     region  = "us-east-1"
     encrypt = true
   }
@@ -33,17 +33,33 @@ resource "aws_lambda_function" "this" {
   image_uri     = "${data.aws_ecr_repository.this.repository_url}:${var.image_tag}"
 
   reserved_concurrent_executions = 3
-  
+
   timeout     = 30
   memory_size = 128
 
   environment {
     variables = {
-      DYNAMODB_TABLE = var.dynamodb_table_name
+      JWT_SECRET         = var.jwt_secret
+      JWT_ISSUER         = var.jwt_issuer
+      SESSION_TABLE_NAME = var.session_table_name
+      DYNAMODB_ENDPOINT  = var.dynamodb_endpoint
     }
   }
 
   image_config {
-    command = ["index.handler"]
+    command = ["bootstrap"]
   }
+}
+
+resource "aws_lambda_function_url" "this" {
+  function_name      = aws_lambda_function.this.function_name
+  authorization_type = "NONE"
+}
+
+resource "aws_lambda_permission" "allow_public_url" {
+  statement_id           = "AllowPublicAccess"
+  action                 = "lambda:InvokeFunctionUrl"
+  function_name          = aws_lambda_function.this.function_name
+  principal              = "*"
+  function_url_auth_type = "NONE"
 }
