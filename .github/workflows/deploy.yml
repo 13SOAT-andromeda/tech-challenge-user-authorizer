@@ -60,9 +60,10 @@ jobs:
       - name: Obter endereço do RDS
         working-directory: .
         run: |
-          RDS_ADDRESS=$(aws rds describe-db-instances \--db-instance-identifier ${{ secrets.DB_INSTANCE_IDENTIFIER }} \--query "DBInstances[0].Endpoint.Address" --output text)
+          RDS_ADDRESS=$(aws rds describe-db-instances \
+            --db-instance-identifier ${{ secrets.DB_NAME }} \
+            --query "DBInstances[0].Endpoint.Address" --output text)
           echo "DB_HOST=$RDS_ADDRESS" >> $GITHUB_ENV
-        -var="db_host=${{ env.DB_HOST }}" \
 
       - name: Terraform Init
         run: |
