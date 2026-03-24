@@ -23,14 +23,18 @@ var newSessionStore = func(tableName, region, endpoint string) (session.Store, e
 }
 
 func handler(ctx context.Context, request events.APIGatewayV2HTTPRequest) (events.APIGatewayV2HTTPResponse, error) {
+
 	if appConfig == nil {
 		appConfig = config.LoadConfig()
 	}
+
+	utils.ErrorLogger.Printf("Configuring session Store: %s", appConfig.DynamoDBTableName)
+
 	if sessionStore == nil {
 		store, err := newSessionStore(appConfig.DynamoDBTableName, appConfig.AWSRegion, appConfig.DynamoDBEndpoint)
 		if err != nil {
 			utils.ErrorLogger.Printf("Failed to initialize session store: %v", err)
-			return internalServerErrorResponse(), nil
+			return internalServerErrorResponse("Failed to initialize session store"), nil
 		}
 		sessionStore = store
 	}
@@ -74,7 +78,7 @@ func handler(ctx context.Context, request events.APIGatewayV2HTTPRequest) (event
 			return unauthorizedResponse("Invalid or expired token"), nil
 		}
 		utils.ErrorLogger.Printf("Failed to validate active session: %v", err)
-		return internalServerErrorResponse(), nil
+		return internalServerErrorResponse("Failed to validate active session"), nil
 	}
 	if strings.TrimSpace(activeSession.UserID) != strings.TrimSpace(userID) {
 		utils.ErrorLogger.Printf("Session userId mismatch for token user %s (stored=%s)", userID, activeSession.UserID)
@@ -100,10 +104,10 @@ func unauthorizedResponse(message string) events.APIGatewayV2HTTPResponse {
 	}
 }
 
-func internalServerErrorResponse() events.APIGatewayV2HTTPResponse {
+func internalServerErrorResponse(message string) events.APIGatewayV2HTTPResponse {
 	return events.APIGatewayV2HTTPResponse{
 		StatusCode: 500,
-		Body:       "{\"error\": \"Internal server error\"}",
+		Body:       "{\"error\": \"" + message + "\"}",
 		Headers: map[string]string{
 			"Content-Type": "application/json",
 		},
