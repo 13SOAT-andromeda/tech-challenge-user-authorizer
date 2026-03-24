@@ -78,6 +78,20 @@ jobs:
             -backend-config="bucket=${{ secrets.AWS_S3_TF_STATE_BUCKET_NAME }}" \
             -backend-config="region=${{ secrets.AWS_REGION }}"
 
+      - name: Terraform Import (recover existing resources into state)
+        env:
+          TF_VAR_image_tag: ${{ github.sha }}
+          TF_VAR_db_host: ${{ env.DB_HOST }}
+          TF_VAR_jwt_secret: ${{ secrets.JWT_SECRET }}
+          TF_VAR_jwt_issuer: ${{ secrets.JWT_ISSUER }}
+          TF_VAR_session_table_name: ${{ secrets.SESSION_TABLE_NAME }}
+          TF_VAR_dynamodb_endpoint: ${{ env.DYNAMODB_ENDPOINT }}
+          TF_VAR_dynamodb_table_name: ${{ secrets.DYNAMODB_TABLE_NAME }}
+        run: |
+          terraform import aws_lambda_function.this tech-challenge-user-authorizer || true
+          terraform import aws_lambda_function_url.this tech-challenge-user-authorizer || true
+          terraform import aws_lambda_permission.allow_public_url tech-challenge-user-authorizer/AllowPublicAccess || true
+
       - name: Terraform Apply
         env:
           TF_VAR_image_tag: ${{ github.sha }}
