@@ -42,8 +42,8 @@ func TestHandler(t *testing.T) {
 	ctx := context.Background()
 
 	t.Run("Missing Authorization Header", func(t *testing.T) {
-		request := events.APIGatewayProxyRequest{
-			Path:    "/test",
+		request := events.APIGatewayV2HTTPRequest{
+			RawPath: "/authorize",
 			Headers: map[string]string{},
 		}
 		response, err := handler(ctx, request)
@@ -56,10 +56,10 @@ func TestHandler(t *testing.T) {
 	})
 
 	t.Run("Invalid Token Format", func(t *testing.T) {
-		request := events.APIGatewayProxyRequest{
-			Path: "/test",
+		request := events.APIGatewayV2HTTPRequest{
+			RawPath: "/authorize",
 			Headers: map[string]string{
-				"Authorization": "Bearer invalid_token_string",
+				"authorization": "Bearer invalid_token_string",
 			},
 		}
 		response, err := handler(ctx, request)
@@ -90,10 +90,10 @@ func TestHandler(t *testing.T) {
 			},
 		}
 
-		request := events.APIGatewayProxyRequest{
-			Path: "/test",
+		request := events.APIGatewayV2HTTPRequest{
+			RawPath: "/authorize",
 			Headers: map[string]string{
-				"Authorization": "Bearer " + tokenString,
+				"authorization": "Bearer " + tokenString,
 			},
 		}
 		response, err := handler(ctx, request)
@@ -113,10 +113,10 @@ func TestHandler(t *testing.T) {
 		})
 		tokenString, _ := token.SignedString([]byte("test_secret"))
 
-		request := events.APIGatewayProxyRequest{
-			Path: "/test",
+		request := events.APIGatewayV2HTTPRequest{
+			RawPath: "/authorize",
 			Headers: map[string]string{
-				"Authorization": "Bearer " + tokenString,
+				"authorization": "Bearer " + tokenString,
 			},
 		}
 		response, err := handler(ctx, request)
@@ -142,10 +142,10 @@ func TestHandler(t *testing.T) {
 			sessionByJTI: map[string]*session.Session{},
 		}
 
-		request := events.APIGatewayProxyRequest{
-			Path: "/test",
+		request := events.APIGatewayV2HTTPRequest{
+			RawPath: "/authorize",
 			Headers: map[string]string{
-				"Authorization": "Bearer " + tokenString,
+				"authorization": "Bearer " + tokenString,
 			},
 		}
 		response, err := handler(ctx, request)
@@ -175,10 +175,10 @@ func TestHandler(t *testing.T) {
 			},
 		}
 
-		request := events.APIGatewayProxyRequest{
-			Path: "/test",
+		request := events.APIGatewayV2HTTPRequest{
+			RawPath: "/authorize",
 			Headers: map[string]string{
-				"Authorization": "Bearer " + tokenString,
+				"authorization": "Bearer " + tokenString,
 			},
 		}
 		response, err := handler(ctx, request)

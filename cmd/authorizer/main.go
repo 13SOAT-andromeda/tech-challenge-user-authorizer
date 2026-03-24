@@ -22,7 +22,7 @@ var newSessionStore = func(tableName, region, endpoint string) (session.Store, e
 	return session.NewDynamoStore(tableName, region, endpoint)
 }
 
-func handler(ctx context.Context, request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
+func handler(ctx context.Context, request events.APIGatewayV2HTTPRequest) (events.APIGatewayV2HTTPResponse, error) {
 	if appConfig == nil {
 		appConfig = config.LoadConfig()
 	}
@@ -35,17 +35,13 @@ func handler(ctx context.Context, request events.APIGatewayProxyRequest) (events
 		sessionStore = store
 	}
 
-	utils.InfoLogger.Printf("Processing request: %s", request.Path)
+	utils.InfoLogger.Printf("Processing request: %s", request.RawPath)
 
-	authHeader, ok := request.Headers["Authorization"]
-
+	// API Gateway v2 always lowercases headers
+	authHeader, ok := request.Headers["authorization"]
 	if !ok {
-		// Fallback to lowercase authorization (API Gateway sometimes lowercases headers)
-		authHeader, ok = request.Headers["authorization"]
-		if !ok {
-			utils.ErrorLogger.Printf("Missing Authorization header")
-			return unauthorizedResponse("Missing Authorization header"), nil
-		}
+		utils.ErrorLogger.Printf("Missing Authorization header")
+		return unauthorizedResponse("Missing Authorization header"), nil
 	}
 
 	tokenString, err := auth.ExtractBearerToken(authHeader)
@@ -85,7 +81,7 @@ func handler(ctx context.Context, request events.APIGatewayProxyRequest) (events
 		return unauthorizedResponse("Invalid or expired token"), nil
 	}
 
-	return events.APIGatewayProxyResponse{
+	return events.APIGatewayV2HTTPResponse{
 		StatusCode: 200,
 		Body:       "{\"message\": \"Authorized\"}",
 		Headers: map[string]string{
@@ -94,8 +90,8 @@ func handler(ctx context.Context, request events.APIGatewayProxyRequest) (events
 	}, nil
 }
 
-func unauthorizedResponse(message string) events.APIGatewayProxyResponse {
-	return events.APIGatewayProxyResponse{
+func unauthorizedResponse(message string) events.APIGatewayV2HTTPResponse {
+	return events.APIGatewayV2HTTPResponse{
 		StatusCode: 401,
 		Body:       "{\"error\": \"" + message + "\"}",
 		Headers: map[string]string{
@@ -104,8 +100,8 @@ func unauthorizedResponse(message string) events.APIGatewayProxyResponse {
 	}
 }
 
-func internalServerErrorResponse() events.APIGatewayProxyResponse {
-	return events.APIGatewayProxyResponse{
+func internalServerErrorResponse() events.APIGatewayV2HTTPResponse {
+	return events.APIGatewayV2HTTPResponse{
 		StatusCode: 500,
 		Body:       "{\"error\": \"Internal server error\"}",
 		Headers: map[string]string{

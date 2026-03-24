@@ -71,11 +71,13 @@ jobs:
             -backend-config="region=${{ secrets.AWS_REGION }}"
 
       - name: Terraform Apply
+        env:
+          TF_VAR_image_tag: ${{ github.sha }}
+          TF_VAR_db_host: ${{ env.DB_HOST }}
+          TF_VAR_jwt_secret: ${{ secrets.JWT_SECRET }}
+          TF_VAR_jwt_issuer: ${{ secrets.JWT_ISSUER }}
+          TF_VAR_session_table_name: ${{ secrets.SESSION_TABLE_NAME }}
+          TF_VAR_dynamodb_endpoint: ${{ secrets.DYNAMODB_ENDPOINT }}
+          TF_VAR_dynamodb_table_name: ${{ secrets.DYNAMODB_TABLE_NAME }}
         run: |
-          terraform apply -auto-approve \
-            -var="image_tag=${{ github.sha }}" \
-            -var="jwt_secret=${{ secrets.JWT_SECRET }}" \
-            -var="jwt_issuer=${{ secrets.JWT_ISSUER }}" \
-            -var="session_table_name=${{ secrets.SESSION_TABLE_NAME }}" \
-            -var="dynamodb_endpoint=${{ secrets.DYNAMODB_ENDPOINT }}" \
-            -var="dynamodb_table_name=${{ secrets.DYNAMODB_TABLE_NAME }}"
+          terraform apply -auto-approve
