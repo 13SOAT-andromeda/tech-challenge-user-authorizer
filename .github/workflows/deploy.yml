@@ -86,7 +86,6 @@ jobs:
           TF_VAR_jwt_issuer: ${{ secrets.JWT_ISSUER }}
           TF_VAR_dynamodb_table_name: ${{ secrets.DYNAMODB_TABLE_NAME }}
           TF_VAR_dynamodb_endpoint: ${{ env.DYNAMODB_ENDPOINT }}
-          TF_VAR_dynamodb_table_name: ${{ secrets.DYNAMODB_TABLE_NAME }}
         run: |
           terraform import aws_lambda_function.this tech-challenge-user-authorizer || true
           terraform import aws_lambda_function_url.this tech-challenge-user-authorizer || true
