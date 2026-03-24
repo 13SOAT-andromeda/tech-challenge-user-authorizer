@@ -10,6 +10,8 @@ type Config struct {
 	JWTIssuer string
 	// SessionTableName is the DynamoDB table used by internal/session (active session token_id/user_id).
 	SessionTableName string
+	AWSRegion        string
+	DynamoDBEndpoint string
 }
 
 // LoadConfig loads the application configuration from environment variables.
@@ -18,6 +20,8 @@ func LoadConfig() *Config {
 		JWTSecret:        getEnv("JWT_SECRET", ""),
 		JWTIssuer:        getEnv("JWT_ISSUER", ""),
 		SessionTableName: getEnv("SESSION_TABLE_NAME", "user-authentication-token"),
+		AWSRegion:        getEnv("AWS_REGION", "us-east-1"),
+		DynamoDBEndpoint: getEnv("DYNAMODB_ENDPOINT", getEnv("AWS_ENDPOINT_URL", "")),
 	}
 }
 

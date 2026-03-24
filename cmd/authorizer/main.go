@@ -18,8 +18,8 @@ import (
 var appConfig *config.Config
 
 var sessionStore session.Store
-var newSessionStore = func(tableName string) (session.Store, error) {
-	return session.NewDynamoStore(tableName)
+var newSessionStore = func(tableName, region, endpoint string) (session.Store, error) {
+	return session.NewDynamoStore(tableName, region, endpoint)
 }
 
 func handler(ctx context.Context, request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
@@ -27,7 +27,7 @@ func handler(ctx context.Context, request events.APIGatewayProxyRequest) (events
 		appConfig = config.LoadConfig()
 	}
 	if sessionStore == nil {
-		store, err := newSessionStore(appConfig.SessionTableName)
+		store, err := newSessionStore(appConfig.SessionTableName, appConfig.AWSRegion, appConfig.DynamoDBEndpoint)
 		if err != nil {
 			utils.ErrorLogger.Printf("Failed to initialize session store: %v", err)
 			return internalServerErrorResponse(), nil

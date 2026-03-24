@@ -57,6 +57,13 @@ jobs:
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
 
+      - name: Obter endereço do RDS
+        working-directory: .
+        run: |
+          RDS_ADDRESS=$(aws rds describe-db-instances \--db-instance-identifier ${{ secrets.DB_INSTANCE_IDENTIFIER }} \--query "DBInstances[0].Endpoint.Address" --output text)
+          echo "DB_HOST=$RDS_ADDRESS" >> $GITHUB_ENV
+        -var="db_host=${{ env.DB_HOST }}" \
+
       - name: Terraform Init
         run: |
           terraform init \
@@ -64,4 +71,11 @@ jobs:
             -backend-config="region=${{ secrets.AWS_REGION }}"
 
       - name: Terraform Apply
-        run: terraform apply -auto-approve -var="image_tag=${{ github.sha }}"
+        run: |
+          terraform apply -auto-approve \
+            -var="image_tag=${{ github.sha }}" \
+            -var="jwt_secret=${{ secrets.JWT_SECRET }}" \
+            -var="jwt_issuer=${{ secrets.JWT_ISSUER }}" \
+            -var="session_table_name=${{ secrets.SESSION_TABLE_NAME }}" \
+            -var="dynamodb_endpoint=${{ secrets.DYNAMODB_ENDPOINT }}" \
+            -var="dynamodb_table_name=${{ secrets.DYNAMODB_TABLE_NAME }}"
