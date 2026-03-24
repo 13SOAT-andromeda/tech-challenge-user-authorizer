@@ -41,7 +41,7 @@ resource "aws_lambda_function" "this" {
     variables = {
       JWT_SECRET         = var.jwt_secret
       JWT_ISSUER         = var.jwt_issuer
-      SESSION_TABLE_NAME = var.session_table_name
+      DYNAMODB_TABLE_NAME = var.dynamodb_table_name
       DYNAMODB_ENDPOINT  = var.dynamodb_endpoint
     }
   }

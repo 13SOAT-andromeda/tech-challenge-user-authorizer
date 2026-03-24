@@ -27,11 +27,6 @@ variable "jwt_issuer" {
   sensitive   = true
 }
 
-variable "session_table_name" {
-  description = "DynamoDB session table name"
-  type        = string
-}
-
 variable "dynamodb_endpoint" {
   description = "DynamoDB endpoint override (e.g. for LocalStack)"
   type        = string

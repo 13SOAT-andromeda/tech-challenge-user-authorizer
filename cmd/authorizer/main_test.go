@@ -34,10 +34,10 @@ func TestHandler(t *testing.T) {
 	// Setup environment variables for config
 	os.Setenv("JWT_SECRET", "test_secret")
 	os.Setenv("JWT_ISSUER", "test_issuer")
-	os.Setenv("SESSION_TABLE_NAME", "sessions-test")
+	os.Setenv("DYNAMODB_TABLE_NAME", "sessions-test")
 	defer os.Unsetenv("JWT_SECRET")
 	defer os.Unsetenv("JWT_ISSUER")
-	defer os.Unsetenv("SESSION_TABLE_NAME")
+	defer os.Unsetenv("DYNAMODB_TABLE_NAME")
 
 	ctx := context.Background()
 

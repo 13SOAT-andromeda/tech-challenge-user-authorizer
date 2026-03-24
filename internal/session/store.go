@@ -1,7 +1,7 @@
 // Package session provides DynamoDB-backed session lookup for the authorizer.
 //
 // Environment (see README.md and .env.example):
-//   - SESSION_TABLE_NAME — table name (default in config: user-authentication-token)
+//   - DYNAMODB_TABLE_NAME — table name (default in config: user-authentication-token)
 //   - AWS_REGION — AWS SDK region (default us-east-1)
 //   - DYNAMODB_ENDPOINT — optional override for LocalStack (e.g. http://host.docker.internal:4566)
 package session

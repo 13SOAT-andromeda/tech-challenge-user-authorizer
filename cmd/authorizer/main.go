@@ -27,7 +27,7 @@ func handler(ctx context.Context, request events.APIGatewayV2HTTPRequest) (event
 		appConfig = config.LoadConfig()
 	}
 	if sessionStore == nil {
-		store, err := newSessionStore(appConfig.SessionTableName, appConfig.AWSRegion, appConfig.DynamoDBEndpoint)
+		store, err := newSessionStore(appConfig.DynamoDBTableName, appConfig.AWSRegion, appConfig.DynamoDBEndpoint)
 		if err != nil {
 			utils.ErrorLogger.Printf("Failed to initialize session store: %v", err)
 			return internalServerErrorResponse(), nil

@@ -22,7 +22,7 @@ Resources:
         Variables:
           JWT_SECRET: 5b9b178c235820c6e69fbf54876bc4df3ffb4f3ab5ec87305b8b42d2481358c3
           JWT_ISSUER: tech-challenge-s1
-          SESSION_TABLE_NAME: user-sessions
+          DYNAMODB_TABLE_NAME: user-authentication-token
           AWS_REGION: us-east-1
           # SAM local + LocalStack: use http://host.docker.internal:4566 (ou IP do host no Linux)
           DYNAMODB_ENDPOINT: ""
