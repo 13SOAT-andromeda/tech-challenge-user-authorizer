@@ -11,6 +11,7 @@ import (
 	"tech-challenge-user-authorizer/internal/session"
 	"tech-challenge-user-authorizer/pkg/utils"
 
+	ddlambda "github.com/DataDog/dd-trace-go/contrib/aws/datadog-lambda-go/v2"
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
 )
@@ -133,5 +134,5 @@ func getUserIDFromClaims(claims map[string]interface{}) (string, error) {
 }
 
 func main() {
-	lambda.Start(handler)
+	lambda.Start(ddlambda.WrapFunction(handler, nil))
 }

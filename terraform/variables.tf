@@ -32,3 +32,9 @@ variable "dynamodb_endpoint" {
   type        = string
   default     = ""
 }
+
+variable "dd_key" {
+  description = "Datadog API Key"
+  type        = string
+  sensitive   = true
+}

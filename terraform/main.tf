@@ -39,10 +39,16 @@ resource "aws_lambda_function" "this" {
 
   environment {
     variables = {
-      JWT_SECRET         = var.jwt_secret
-      JWT_ISSUER         = var.jwt_issuer
-      DYNAMODB_TABLE_NAME = var.dynamodb_table_name
-      DYNAMODB_ENDPOINT  = var.dynamodb_endpoint
+      JWT_SECRET            = var.jwt_secret
+      JWT_ISSUER            = var.jwt_issuer
+      DYNAMODB_TABLE_NAME   = var.dynamodb_table_name
+      DYNAMODB_ENDPOINT     = var.dynamodb_endpoint
+      DD_API_KEY            = var.dd_key
+      DD_ENV                = "production"
+      DD_SERVICE            = "tech-challenge-user-authorizer"
+      DD_SITE               = "us5.datadoghq.com"
+      DD_VERSION            = "1.0.0"
+      DD_APPSEC_SCA_ENABLED = "false"
     }
   }
 
