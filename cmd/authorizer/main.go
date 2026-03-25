@@ -29,7 +29,7 @@ func handler(ctx context.Context, request events.APIGatewayV2CustomAuthorizerV2R
 		appConfig = config.LoadConfig()
 	}
 
-	utils.ErrorLogger.Printf("Configuring session Store: %s", appConfig.DynamoDBTableName)
+	utils.InfoLogger.Printf("Configuring session Store: %s", appConfig.DynamoDBTableName)
 
 	if sessionStore == nil {
 		store, err := newSessionStore(appConfig.DynamoDBTableName, appConfig.AWSRegion, appConfig.DynamoDBEndpoint)
