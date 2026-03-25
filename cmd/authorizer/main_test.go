@@ -42,7 +42,7 @@ func TestHandler(t *testing.T) {
 	ctx := context.Background()
 
 	t.Run("Missing Authorization Header", func(t *testing.T) {
-		request := events.APIGatewayV2HTTPRequest{
+		request := events.APIGatewayV2CustomAuthorizerV2Request{
 			RawPath: "/authorize",
 			Headers: map[string]string{},
 		}
@@ -50,13 +50,13 @@ func TestHandler(t *testing.T) {
 		if err != nil {
 			t.Errorf("expected no error, got %v", err)
 		}
-		if response.StatusCode != 401 {
-			t.Errorf("expected status code 401, got %d", response.StatusCode)
+		if response.IsAuthorized {
+			t.Error("expected IsAuthorized=false")
 		}
 	})
 
 	t.Run("Invalid Token Format", func(t *testing.T) {
-		request := events.APIGatewayV2HTTPRequest{
+		request := events.APIGatewayV2CustomAuthorizerV2Request{
 			RawPath: "/authorize",
 			Headers: map[string]string{
 				"authorization": "Bearer invalid_token_string",
@@ -66,8 +66,8 @@ func TestHandler(t *testing.T) {
 		if err != nil {
 			t.Errorf("expected no error, got %v", err)
 		}
-		if response.StatusCode != 401 {
-			t.Errorf("expected status code 401, got %d", response.StatusCode)
+		if response.IsAuthorized {
+			t.Error("expected IsAuthorized=false")
 		}
 	})
 
@@ -90,7 +90,7 @@ func TestHandler(t *testing.T) {
 			},
 		}
 
-		request := events.APIGatewayV2HTTPRequest{
+		request := events.APIGatewayV2CustomAuthorizerV2Request{
 			RawPath: "/authorize",
 			Headers: map[string]string{
 				"authorization": "Bearer " + tokenString,
@@ -100,8 +100,8 @@ func TestHandler(t *testing.T) {
 		if err != nil {
 			t.Errorf("expected no error, got %v", err)
 		}
-		if response.StatusCode != 200 {
-			t.Errorf("expected status code 200, got %d", response.StatusCode)
+		if !response.IsAuthorized {
+			t.Error("expected IsAuthorized=true")
 		}
 	})
 
@@ -113,7 +113,7 @@ func TestHandler(t *testing.T) {
 		})
 		tokenString, _ := token.SignedString([]byte("test_secret"))
 
-		request := events.APIGatewayV2HTTPRequest{
+		request := events.APIGatewayV2CustomAuthorizerV2Request{
 			RawPath: "/authorize",
 			Headers: map[string]string{
 				"authorization": "Bearer " + tokenString,
@@ -123,8 +123,8 @@ func TestHandler(t *testing.T) {
 		if err != nil {
 			t.Errorf("expected no error, got %v", err)
 		}
-		if response.StatusCode != 401 {
-			t.Errorf("expected status code 401, got %d", response.StatusCode)
+		if response.IsAuthorized {
+			t.Error("expected IsAuthorized=false")
 		}
 	})
 
@@ -142,7 +142,7 @@ func TestHandler(t *testing.T) {
 			sessionByJTI: map[string]*session.Session{},
 		}
 
-		request := events.APIGatewayV2HTTPRequest{
+		request := events.APIGatewayV2CustomAuthorizerV2Request{
 			RawPath: "/authorize",
 			Headers: map[string]string{
 				"authorization": "Bearer " + tokenString,
@@ -152,8 +152,8 @@ func TestHandler(t *testing.T) {
 		if err != nil {
 			t.Errorf("expected no error, got %v", err)
 		}
-		if response.StatusCode != 401 {
-			t.Errorf("expected status code 401, got %d", response.StatusCode)
+		if response.IsAuthorized {
+			t.Error("expected IsAuthorized=false")
 		}
 	})
 
@@ -175,7 +175,7 @@ func TestHandler(t *testing.T) {
 			},
 		}
 
-		request := events.APIGatewayV2HTTPRequest{
+		request := events.APIGatewayV2CustomAuthorizerV2Request{
 			RawPath: "/authorize",
 			Headers: map[string]string{
 				"authorization": "Bearer " + tokenString,
@@ -185,8 +185,8 @@ func TestHandler(t *testing.T) {
 		if err != nil {
 			t.Errorf("expected no error, got %v", err)
 		}
-		if response.StatusCode != 401 {
-			t.Errorf("expected status code 401, got %d", response.StatusCode)
+		if response.IsAuthorized {
+			t.Error("expected IsAuthorized=false")
 		}
 	})
 }
