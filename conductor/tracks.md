@@ -29,5 +29,5 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 ---
 
-- [ ] **Track: quero que a minha lambda authorizer devolva as seguintes informações do usuário através dos headers do response: X-User-Id (ID do usuário), X-User-Role (role/permissão do usuário), X-User-Email (E-mail do usuário). A ideia é que meu API Gateway repasse esses headers para a API que será chamada na AWS.**
+- [~] **Track: quero que a minha lambda authorizer devolva as seguintes informações do usuário através dos headers do response: X-User-Id (ID do usuário), X-User-Role (role/permissão do usuário), X-User-Email (E-mail do usuário). A ideia é que meu API Gateway repasse esses headers para a API que será chamada na AWS.**
 *Link: [./tracks/user_info_headers_20260406/](./tracks/user_info_headers_20260406/)*
