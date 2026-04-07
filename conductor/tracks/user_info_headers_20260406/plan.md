@@ -16,7 +16,7 @@
 - [x] Task: Refactor and ensure all tests pass, including existing ones 2fbde87
 - [x] Task: Conductor - User Manual Verification 'Phase 2: Implementation (TDD)' (Protocol in workflow.md) a6a3517
 
-## Phase 3: Verification & Quality Gate
-- [ ] Task: Run full test suite and verify code coverage >80% (`go test ./... -cover`)
-- [ ] Task: Verify that existing session-related checks (JTI, session store) still work as expected
-- [ ] Task: Conductor - User Manual Verification 'Phase 3: Verification & Quality Gate' (Protocol in workflow.md)
+## Phase 3: Verification & Quality Gate [checkpoint: c004001]
+- [x] Task: Run full test suite and verify code coverage >80% (`go test ./... -cover`) f2b04af
+- [x] Task: Verify that existing session-related checks (JTI, session store) still work as expected f2b04af
+- [x] Task: Conductor - User Manual Verification 'Phase 3: Verification & Quality Gate' (Protocol in workflow.md) c004001
