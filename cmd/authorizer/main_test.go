@@ -75,10 +75,12 @@ func TestHandler(t *testing.T) {
 		tokenJTI := "test-jti"
 		userID := "1"
 		token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-			"iss": "test_issuer",
-			"sub": userID,
-			"jti": tokenJTI,
-			"exp": time.Now().Add(time.Hour).Unix(),
+			"iss":   "test_issuer",
+			"sub":   userID,
+			"jti":   tokenJTI,
+			"role":  "user",
+			"email": "user@example.com",
+			"exp":   time.Now().Add(time.Hour).Unix(),
 		})
 		tokenString, _ := token.SignedString([]byte("test_secret"))
 
@@ -131,10 +133,12 @@ func TestHandler(t *testing.T) {
 	t.Run("Session Not Found", func(t *testing.T) {
 		userID := "1"
 		token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-			"iss": "test_issuer",
-			"sub": userID,
-			"jti": "some-jti",
-			"exp": time.Now().Add(time.Hour).Unix(),
+			"iss":   "test_issuer",
+			"sub":   userID,
+			"jti":   "some-jti",
+			"role":  "user",
+			"email": "user@example.com",
+			"exp":   time.Now().Add(time.Hour).Unix(),
 		})
 		tokenString, _ := token.SignedString([]byte("test_secret"))
 
@@ -160,10 +164,12 @@ func TestHandler(t *testing.T) {
 	t.Run("Session UserID Mismatch", func(t *testing.T) {
 		tokenJTI := "token-jti"
 		token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-			"iss": "test_issuer",
-			"sub": "1",
-			"jti": tokenJTI,
-			"exp": time.Now().Add(time.Hour).Unix(),
+			"iss":   "test_issuer",
+			"sub":   "1",
+			"jti":   tokenJTI,
+			"role":  "user",
+			"email": "user@example.com",
+			"exp":   time.Now().Add(time.Hour).Unix(),
 		})
 		tokenString, _ := token.SignedString([]byte("test_secret"))
 
@@ -187,6 +193,163 @@ func TestHandler(t *testing.T) {
 		}
 		if response.IsAuthorized {
 			t.Error("expected IsAuthorized=false")
+		}
+	})
+
+	t.Run("Success with User Info Headers", func(t *testing.T) {
+		tokenJTI := "test-jti"
+		userID := "1"
+		userRole := "admin"
+		userEmail := "admin@example.com"
+		token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+			"iss":   "test_issuer",
+			"sub":   userID,
+			"jti":   tokenJTI,
+			"role":  userRole,
+			"email": userEmail,
+			"exp":   time.Now().Add(time.Hour).Unix(),
+		})
+		tokenString, _ := token.SignedString([]byte("test_secret"))
+
+		sessionStore = &mockSessionStore{
+			sessionByJTI: map[string]*session.Session{
+				tokenJTI: {
+					UserID: userID,
+				},
+			},
+		}
+
+		request := events.APIGatewayV2CustomAuthorizerV2Request{
+			RawPath: "/authorize",
+			Headers: map[string]string{
+				"authorization": "Bearer " + tokenString,
+			},
+		}
+		response, err := handler(ctx, request)
+		if err != nil {
+			t.Errorf("expected no error, got %v", err)
+		}
+		if !response.IsAuthorized {
+			t.Error("expected IsAuthorized=true")
+		}
+
+		if response.Context["userId"] != userID {
+			t.Errorf("expected context userId=%s, got %v", userID, response.Context["userId"])
+		}
+		if response.Context["userRole"] != userRole {
+			t.Errorf("expected context userRole=%s, got %v", userRole, response.Context["userRole"])
+		}
+		if response.Context["userEmail"] != userEmail {
+			t.Errorf("expected context userEmail=%s, got %v", userEmail, response.Context["userEmail"])
+		}
+	})
+
+	t.Run("Success with user_id claim", func(t *testing.T) {
+		tokenJTI := "test-jti"
+		userID := "custom-user-id"
+		token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+			"iss":     "test_issuer",
+			"user_id": userID,
+			"jti":     tokenJTI,
+			"role":    "user",
+			"email":   "user@example.com",
+			"exp":     time.Now().Add(time.Hour).Unix(),
+		})
+		tokenString, _ := token.SignedString([]byte("test_secret"))
+
+		sessionStore = &mockSessionStore{
+			sessionByJTI: map[string]*session.Session{
+				tokenJTI: {
+					UserID: userID,
+				},
+			},
+		}
+
+		request := events.APIGatewayV2CustomAuthorizerV2Request{
+			RawPath: "/authorize",
+			Headers: map[string]string{
+				"authorization": "Bearer " + tokenString,
+			},
+		}
+		response, err := handler(ctx, request)
+		if err != nil {
+			t.Errorf("expected no error, got %v", err)
+		}
+		if !response.IsAuthorized {
+			t.Error("expected IsAuthorized=true")
+		}
+		if response.Context["userId"] != userID {
+			t.Errorf("expected context userId=%s, got %v", userID, response.Context["userId"])
+		}
+	})
+
+	t.Run("Missing Role Claim", func(t *testing.T) {
+		tokenJTI := "test-jti"
+		userID := "1"
+		token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+			"iss":   "test_issuer",
+			"sub":   userID,
+			"jti":   tokenJTI,
+			"email": "admin@example.com",
+			"exp":   time.Now().Add(time.Hour).Unix(),
+		})
+		tokenString, _ := token.SignedString([]byte("test_secret"))
+
+		sessionStore = &mockSessionStore{
+			sessionByJTI: map[string]*session.Session{
+				tokenJTI: {
+					UserID: userID,
+				},
+			},
+		}
+
+		request := events.APIGatewayV2CustomAuthorizerV2Request{
+			RawPath: "/authorize",
+			Headers: map[string]string{
+				"authorization": "Bearer " + tokenString,
+			},
+		}
+		response, err := handler(ctx, request)
+		if err != nil {
+			t.Errorf("expected no error, got %v", err)
+		}
+		if response.IsAuthorized {
+			t.Error("expected IsAuthorized=false due to missing role claim")
+		}
+	})
+
+	t.Run("Missing Email Claim", func(t *testing.T) {
+		tokenJTI := "test-jti"
+		userID := "1"
+		token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+			"iss":  "test_issuer",
+			"sub":  userID,
+			"jti":  tokenJTI,
+			"role": "admin",
+			"exp":  time.Now().Add(time.Hour).Unix(),
+		})
+		tokenString, _ := token.SignedString([]byte("test_secret"))
+
+		sessionStore = &mockSessionStore{
+			sessionByJTI: map[string]*session.Session{
+				tokenJTI: {
+					UserID: userID,
+				},
+			},
+		}
+
+		request := events.APIGatewayV2CustomAuthorizerV2Request{
+			RawPath: "/authorize",
+			Headers: map[string]string{
+				"authorization": "Bearer " + tokenString,
+			},
+		}
+		response, err := handler(ctx, request)
+		if err != nil {
+			t.Errorf("expected no error, got %v", err)
+		}
+		if response.IsAuthorized {
+			t.Error("expected IsAuthorized=false due to missing email claim")
 		}
 	})
 }
