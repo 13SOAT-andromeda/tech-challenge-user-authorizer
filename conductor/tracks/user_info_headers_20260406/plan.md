@@ -1,9 +1,9 @@
 # Implementation Plan: User Information Headers
 
-## Phase 1: Research & Preparation
-- [ ] Task: Review `internal/auth/jwt.go` to understand current claim extraction logic
-- [ ] Task: Review `cmd/authorizer/main_test.go` to identify relevant test cases for authorizer response context
-- [ ] Task: Conductor - User Manual Verification 'Phase 1: Research & Preparation' (Protocol in workflow.md)
+## Phase 1: Research & Preparation [checkpoint: 8c8ab75]
+- [x] Task: Review `internal/auth/jwt.go` to understand current claim extraction logic
+- [x] Task: Review `cmd/authorizer/main_test.go` to identify relevant test cases for authorizer response context
+- [x] Task: Conductor - User Manual Verification 'Phase 1: Research & Preparation' (Protocol in workflow.md) 8c8ab75
 
 ## Phase 2: Implementation (TDD)
 - [ ] Task: Write failing unit tests in `cmd/authorizer/main_test.go` to verify:
