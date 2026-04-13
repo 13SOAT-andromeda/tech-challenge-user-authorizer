@@ -76,3 +76,10 @@ bootstrap
 gh-pr-enhancer.skill
 gh-pr-enhancer/
 
+# local development
+.aws-sam
+
+# Agents
+condutor/
+openspec/
+.claude/
