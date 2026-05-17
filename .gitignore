@@ -33,6 +33,8 @@ authorizer_bin/
 # AWS SAM / Serverless local artifacts
 .localstack/
 .localstack/*
+.aws-sam
+sam-env.json
 
 # Localstack generated data
 localstack-data/
