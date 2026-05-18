@@ -18,11 +18,22 @@ func main() {
 		issuer = "tech-challenge-s1"
 	}
 
+	email := os.Getenv("EMAIL")
+	if email == "" {
+		email = "admin@garage.com"
+	}
+	role := os.Getenv("ROLE")
+	if role == "" {
+		role = "administrator"
+	}
+
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"iss": issuer,
-		"sub": "1",
-		"jti": "test-jti-1",
-		"exp": time.Now().Add(time.Hour).Unix(),
+		"iss":   issuer,
+		"sub":   "1",
+		"jti":   "test-jti-1",
+		"exp":   time.Now().Add(time.Hour).Unix(),
+		"email": email,
+		"role":  role,
 	})
 	tokenString, _ := token.SignedString([]byte(secret))
 	fmt.Print(tokenString)
