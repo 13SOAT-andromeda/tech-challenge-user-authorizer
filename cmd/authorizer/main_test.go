@@ -75,10 +75,12 @@ func TestHandler(t *testing.T) {
 		tokenJTI := "test-jti"
 		userID := "1"
 		token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-			"iss": "test_issuer",
-			"sub": userID,
-			"jti": tokenJTI,
-			"exp": time.Now().Add(time.Hour).Unix(),
+			"iss":   "test_issuer",
+			"sub":   userID,
+			"jti":   tokenJTI,
+			"exp":   time.Now().Add(time.Hour).Unix(),
+			"email": "test@example.com",
+			"role":  "administrator",
 		})
 		tokenString, _ := token.SignedString([]byte("test_secret"))
 
@@ -103,13 +105,21 @@ func TestHandler(t *testing.T) {
 		if !response.IsAuthorized {
 			t.Error("expected IsAuthorized=true")
 		}
+		if response.Context["userEmail"] != "test@example.com" {
+			t.Errorf("expected userEmail=test@example.com, got %v", response.Context["userEmail"])
+		}
+		if response.Context["userRole"] != "administrator" {
+			t.Errorf("expected userRole=administrator, got %v", response.Context["userRole"])
+		}
 	})
 
 	t.Run("Token Missing JTI", func(t *testing.T) {
 		token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-			"iss": "test_issuer",
-			"sub": "1",
-			"exp": time.Now().Add(time.Hour).Unix(),
+			"iss":   "test_issuer",
+			"sub":   "1",
+			"exp":   time.Now().Add(time.Hour).Unix(),
+			"email": "test@example.com",
+			"role":  "administrator",
 		})
 		tokenString, _ := token.SignedString([]byte("test_secret"))
 
@@ -131,10 +141,12 @@ func TestHandler(t *testing.T) {
 	t.Run("Session Not Found", func(t *testing.T) {
 		userID := "1"
 		token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-			"iss": "test_issuer",
-			"sub": userID,
-			"jti": "some-jti",
-			"exp": time.Now().Add(time.Hour).Unix(),
+			"iss":   "test_issuer",
+			"sub":   userID,
+			"jti":   "some-jti",
+			"exp":   time.Now().Add(time.Hour).Unix(),
+			"email": "test@example.com",
+			"role":  "administrator",
 		})
 		tokenString, _ := token.SignedString([]byte("test_secret"))
 
@@ -157,13 +169,81 @@ func TestHandler(t *testing.T) {
 		}
 	})
 
+	t.Run("Token Missing Email", func(t *testing.T) {
+		tokenJTI := "test-jti-no-email"
+		userID := "1"
+		token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+			"iss":  "test_issuer",
+			"sub":  userID,
+			"jti":  tokenJTI,
+			"exp":  time.Now().Add(time.Hour).Unix(),
+			"role": "administrator",
+		})
+		tokenString, _ := token.SignedString([]byte("test_secret"))
+
+		sessionStore = &mockSessionStore{
+			sessionByJTI: map[string]*session.Session{
+				tokenJTI: {UserID: userID},
+			},
+		}
+
+		request := events.APIGatewayV2CustomAuthorizerV2Request{
+			RawPath: "/authorize",
+			Headers: map[string]string{
+				"authorization": "Bearer " + tokenString,
+			},
+		}
+		response, err := handler(ctx, request)
+		if err != nil {
+			t.Errorf("expected no error, got %v", err)
+		}
+		if response.IsAuthorized {
+			t.Error("expected IsAuthorized=false for missing email claim")
+		}
+	})
+
+	t.Run("Token Missing Role", func(t *testing.T) {
+		tokenJTI := "test-jti-no-role"
+		userID := "1"
+		token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+			"iss":   "test_issuer",
+			"sub":   userID,
+			"jti":   tokenJTI,
+			"exp":   time.Now().Add(time.Hour).Unix(),
+			"email": "test@example.com",
+		})
+		tokenString, _ := token.SignedString([]byte("test_secret"))
+
+		sessionStore = &mockSessionStore{
+			sessionByJTI: map[string]*session.Session{
+				tokenJTI: {UserID: userID},
+			},
+		}
+
+		request := events.APIGatewayV2CustomAuthorizerV2Request{
+			RawPath: "/authorize",
+			Headers: map[string]string{
+				"authorization": "Bearer " + tokenString,
+			},
+		}
+		response, err := handler(ctx, request)
+		if err != nil {
+			t.Errorf("expected no error, got %v", err)
+		}
+		if response.IsAuthorized {
+			t.Error("expected IsAuthorized=false for missing role claim")
+		}
+	})
+
 	t.Run("Session UserID Mismatch", func(t *testing.T) {
 		tokenJTI := "token-jti"
 		token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-			"iss": "test_issuer",
-			"sub": "1",
-			"jti": tokenJTI,
-			"exp": time.Now().Add(time.Hour).Unix(),
+			"iss":   "test_issuer",
+			"sub":   "1",
+			"jti":   tokenJTI,
+			"exp":   time.Now().Add(time.Hour).Unix(),
+			"email": "test@example.com",
+			"role":  "administrator",
 		})
 		tokenString, _ := token.SignedString([]byte("test_secret"))
 
