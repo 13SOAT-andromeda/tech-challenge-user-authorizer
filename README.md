@@ -66,8 +66,3 @@ Para implantar a infraestrutura de produção na AWS:
 ## Diagrama da Arquitetura
 
 ![Arquitetura da Base de Dados](.github/misc/lambda-authorizer-architecture.png)
-
-
-## APIs (Swagger/Postman)
-
-*(em branco)*
