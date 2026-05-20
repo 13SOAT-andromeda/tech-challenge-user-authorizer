@@ -8,6 +8,6 @@ RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o bootstrap ./cmd/main.go
 
 # Final stage
 FROM public.ecr.aws/lambda/provided:al2023
-COPY --from=build /app/main /var/runtime/bootstrap
+COPY --from=build /app/bootstrap /var/runtime/bootstrap
 COPY --from=public.ecr.aws/datadog/lambda-extension:latest /opt/extensions/datadog-agent /opt/extensions/datadog-agent
 CMD [ "bootstrap.handler" ]
