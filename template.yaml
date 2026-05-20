@@ -1,0 +1,39 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+Description: Tech Challenge User Authorizer - SAM local
+
+Globals:
+  Function:
+    Runtime: provided.al2023
+    Architectures:
+      - x86_64
+    Timeout: 30
+
+Resources:
+  UserAuthorizerFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: user-authorizer
+      CodeUri: cmd/
+      Handler: bootstrap
+      Environment:
+        Variables:
+          JWT_SECRET: ""
+          JWT_ISSUER: ""
+          DYNAMODB_TABLE_NAME: ""
+          DYNAMODB_ENDPOINT: ""
+          AWS_ENDPOINT_URL: ""
+          AWS_REGION: ""
+      Events:
+        AuthorizeApi:
+          Type: HttpApi
+          Properties:
+            Path: /authorize
+            Method: get
+        CatchAll:
+          Type: HttpApi
+          Properties:
+            Path: /{proxy+}
+            Method: any
+    Metadata:
+      BuildMethod: go1.x

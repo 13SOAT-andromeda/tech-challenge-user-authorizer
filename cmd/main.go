@@ -72,6 +72,18 @@ func handler(ctx context.Context, request events.APIGatewayV2CustomAuthorizerV2R
 		return denyResponse(), nil
 	}
 
+	userRole, err := getRequiredStringClaim(claims, "role")
+	if err != nil {
+		utils.ErrorLogger.Printf("Invalid token claims: %v", err)
+		return denyResponse(), nil
+	}
+
+	userEmail, err := getRequiredStringClaim(claims, "email")
+	if err != nil {
+		utils.ErrorLogger.Printf("Invalid token claims: %v", err)
+		return denyResponse(), nil
+	}
+
 	activeSession, err := sessionStore.GetSessionByJTI(ctx, tokenJTI)
 	if err != nil {
 		if errors.Is(err, session.ErrSessionNotFound) {
@@ -89,7 +101,9 @@ func handler(ctx context.Context, request events.APIGatewayV2CustomAuthorizerV2R
 	return events.APIGatewayV2CustomAuthorizerSimpleResponse{
 		IsAuthorized: true,
 		Context: map[string]interface{}{
-			"userId": userID,
+			"userId":    userID,
+			"userRole":  userRole,
+			"userEmail": userEmail,
 		},
 	}, nil
 }
