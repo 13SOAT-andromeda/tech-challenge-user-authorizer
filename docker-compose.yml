@@ -3,8 +3,9 @@ services:
     container_name: localstack_main
     image: localstack/localstack:latest
     ports:
-      - "127.0.0.1:4566:4566"            # LocalStack Gateway
-      - "127.0.0.1:4510-4559:4510-4559"  # external services port range
+      - "127.0.0.1:4566:4566" # LocalStack Gateway
+      - "127.0.0.1:4510-4559:4510-4559" # external services port range
+    env_file: .env
     environment:
       # cloudwatch = métricas/alarmes (API); logs = CloudWatch Logs (grupos/streams da Lambda)
       SERVICES: lambda,iam,s3,cloudwatch,logs,sts,dynamodb

@@ -1,0 +1,8 @@
+{
+  "track_id": "user_info_headers_20260406",
+  "type": "feature",
+  "status": "new",
+  "created_at": "2026-04-06T12:00:00Z",
+  "updated_at": "2026-04-06T12:00:00Z",
+  "description": "quero que a minha lambda authorizer devolva as seguintes informações do usuário através dos headers do response: X-User-Id (ID do usuário), X-User-Role (role/permissão do usuário), X-User-Email (E-mail do usuário). A ideia é que meu API Gateway repasse esses headers para a API que será chamada na AWS."
+}
